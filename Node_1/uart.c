@@ -4,9 +4,9 @@
 
 #include "uart.h"
 
-#define F_OSC 4915200
-#define BAUD 9600
-#define UBRR_VALUE ((F_OSC/(16*BAUD)) - 1)
+#define F_OSC 4915200UL
+#define BAUD 9600UL
+#define UBRR_VALUE ((F_OSC/(16UL*BAUD)) - 1)
 
 void uart_init() {
     //Set baud rate for transmission. UBRR0H contains 4 msb in UBRR_VALUE and UBRR0L contains the 8 LSB
@@ -24,15 +24,22 @@ void uart_init() {
 
 }
 
-void uart_transmit(unsigned char data){
-    while ( !(UCSR0A & (1 << UDRE)) )
+int uart_transmit(char data, FILE *stream){
+    //wait until UDRE bit in USCRA is set to 1 which means ready to transmit
+    while ( !(UCSR0A & (1 << UDRE0)) )
         ;
-    UDR = data;
+
+    //transmit data
+    UDR0 = data;
+    return 0;
 }
 
 
-unsigned char uart_recieve(){
-    while ( !(UCSR0A & (1 << RXC)))
+int uart_recieve(FILE *stream){
+    //wait until RXC bit in USCRA is set to 1 which means ready to recieve
+    while ( !(UCSR0A & (1 << RXC0)))
         ;
-    return UDR;
+    
+    // read data in register UDR0
+    return UDR0;
 }

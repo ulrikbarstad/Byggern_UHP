@@ -1,5 +1,5 @@
 void uart_init();
 
-void uart_transmit(unsigned char data);
+int uart_transmit(char data, FILE *stream);
 
-unsigned char uart_recieve();
+int uart_recieve(FILE *stream);
