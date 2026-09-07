@@ -1,17 +1,23 @@
 {
-  "configurations": [
-    {
-      "name": "AVR-Linux",
-      "includePath": [
-        "${workspaceFolder}/**",
-        "/usr/lib/avr/include"
-      ],
-      "defines": [],
-      "compilerPath": "/usr/bin/avr-gcc",
-      "cStandard": "c11",
-      "cppStandard": "c++17",
-      "intelliSenseMode": "linux-gcc-x86"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "AVR",
+            "compilerPath": "/usr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega162"
+            ],
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/lib/avr/include",
+                "/usr/lib/gcc/avr/14.3.0/include",
+                "/usr/lib/gcc/avr/14.3.0/include-fixed"
+            ],
+            "defines": [
+                "__AVR_ATmega162__"
+            ],
+            "cStandard": "c11",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
 }
