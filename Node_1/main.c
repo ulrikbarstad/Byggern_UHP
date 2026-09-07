@@ -1,5 +1,3 @@
-
-
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -15,6 +13,7 @@ int main(void)
     while (1)
     {
         PORTA |= (1 << LED);
+        uart_transmit('A')
         _delay_ms(500);
 
         PORTA &= ~(1 << LED);
