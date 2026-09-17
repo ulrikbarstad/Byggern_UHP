@@ -12,6 +12,11 @@
 #include <stdint.h>
 
 
+#define SRAM_BASE  0x1800
+#define SRAM_SIZE  0x0800
+
+
+volatile uint8_t * const SRAM = (volatile uint8_t *)SRAM_BASE;
 
 
 int main(void)
@@ -23,8 +28,8 @@ int main(void)
     stdout = uart_stream;
     stdin = uart_stream;
      volatile char *addy = (char *)0x1FFF;
-
     */
+    sram_init();
     uart_init();
    
     FILE *uart_stream = fdevopen(uart_transmit, uart_recieve);
@@ -37,20 +42,24 @@ int main(void)
     SFIOR &= ~((1 << XMM2) | (1 << XMM1) | (1 << XMM0));
     SFIOR |= (1 << XMM2);
 
-    sram_init();
 
-   
+    
+
+    
     //SRAM_test();
     
     adc_init();
     
 
-
     while (1) {
-        
-        _delay_ms(100);
-       
-        
+        uint8_t x;
+        uint8_t y;
+
+        adc_read_touchpad(&x, &y);
+
+        printf("X: %u, Y: %u\r\n", (unsigned)x, (unsigned)y);
+
+        _delay_ms(10);
     }
     return 0;
 }
