@@ -67,29 +67,32 @@ void adc_read_touchpad(uint8_t *x_touch, uint8_t *y_touch){
 }
 
 
-Position adc_joystick_position(Position_Calibration calibration){ // takes in calibration struct, reads position and returns a position in x and y direction from -100 to 100.
+// takes in calibration struct, reads position and returns a position in x and y direction from -100 to 100. 
+// Calibration struct contains values for maximum and minimum x and y value as well as the values they have when neutral
+Position adc_joystick_position(Position_Calibration calibration){ 
     Position pos;
     uint8_t x_pos_joystick;
     uint8_t y_pos_joystick;
-    adc_read_joystick(&x_pos_joystick, &y_pos_joystick);
+    adc_read_joystick(&x_pos_joystick, &y_pos_joystick); // reads joystick position
 
     //set x_pos
-    if (x_pos_joystick <= calibration.neutral_x + 1 && x_pos_joystick >= calibration.neutral_x - 1){
+    if (x_pos_joystick <= calibration.neutral_x + 1 && x_pos_joystick >= calibration.neutral_x - 1){ //if x_pos is in neutral position +- 1 Then x is 0
         pos.x_pos = 0;
     }
 
-    else if(x_pos_joystick > calibration.neutral_x){
+    // x != neutral position, check if x is positive. Then we get the difference between x and neutral position and scales it so that it is between 0 and 100 
+    else if(x_pos_joystick > calibration.neutral_x){ 
         pos.x_pos =
             ((x_pos_joystick - calibration.neutral_x) * 100) /
             (calibration.max_x_pos - calibration.neutral_x);
     }
-    else{
+    else{ // same as last else if but now we do it so that x is negative. 
          pos.x_pos =
             -((calibration.neutral_x - x_pos_joystick) * 100) /
             (calibration.neutral_x - calibration.min_x_pos);
     }
 
-    //set y_pos
+    //set y_pos. The same as for x_pos
     if (y_pos_joystick <= calibration.neutral_y + 1 && y_pos_joystick >= calibration.neutral_y - 1){
         pos.y_pos = 0;
     }
@@ -105,13 +108,18 @@ Position adc_joystick_position(Position_Calibration calibration){ // takes in ca
             -((calibration.neutral_y - y_pos_joystick) * 100) /
             (calibration.neutral_y - calibration.min_y_pos);
     }
-    return pos;
+    return pos; // return Position struct with values for x and y position between -100 and 100. Returns 0, 0 if stick is in neutral
 }
 
+
+// returns direction of joystick. Takes in calibration values and a neutral limit to set a limit for 
+// how much the joystick must be removed from center to go from NEUTRAL to another direction 
 Position_Direction adc_joystick_direction(Position_Calibration calibration, uint8_t neutral_limit){
     Position_Direction dir;
-    Position pos = adc_joystick_position(calibration);
+    Position pos = adc_joystick_position(calibration); // reads position and returns it as x value and y value between -100 and 100. Returns 0, 0 if in neutral
 
+
+    //maps out a NAUTRAL square in the middle of joystick position with sides 2 * neutral limit. If joystick position is in this square direction is NEUTRAL
     if (pos.x_pos <= 0 + neutral_limit && 
         pos.x_pos >= 0 - neutral_limit && 
         pos.y_pos <= 0 + neutral_limit &&
@@ -119,19 +127,19 @@ Position_Direction adc_joystick_direction(Position_Calibration calibration, uint
         dir = NEUTRAL;
     }
 
-    else if(pos.y_pos > 0){
-        if (pos.y_pos > abs(pos.x_pos)){
+    else if(pos.y_pos > 0){ // if position is in upper half of possible positions
+        if (pos.y_pos > abs(pos.x_pos)){ //if y pos is bigger than x and bigger than -x this means that position is more up then to the sides so that direction is UP
             dir = UP;
         }
-        else if(pos.x_pos < 0){
+        else if(pos.x_pos < 0){ // now it is more to one side than up. Check if x is negative so that direction is LEFT
             dir = LEFT;
         }
-        else{
+        else{ //must be RIGHT
             dir = RIGHT;
         }
     }
 
-    else{
+    else{ // Same as above but now the y position is negative so that we check for directions DOWN, LEFT and RIGHT
         if(abs(pos.y_pos) > abs(pos.x_pos)){
             dir = DOWN;
         }
@@ -146,6 +154,9 @@ Position_Direction adc_joystick_direction(Position_Calibration calibration, uint
     return dir;
 }
 
+
+//Finds position of touchpad. Takes in calibration values so that the position can be returned as a value between -100 and 100. 
+//Uses same code as adc_touchpad_position but now we dont need a neutral position. Ignores neutral values of Position_Calibration struct
 Position adc_touchpad_position(Position_Calibration calibration){
     Position pos;
     uint8_t x_pos_touchpad;
@@ -167,7 +178,13 @@ Position adc_touchpad_position(Position_Calibration calibration){
 }
 
 
-
+//This function is made so that you can auto calibrate joystick or touchpad
+//It takes in a function pointer to either adc_read_joystick or adc_read_touchpad. This decides which one you want to calibrate
+//It returns a Position_Calibration struct with calibration values for either joystick or touchpad
+//When running calibation the joystick must start in neutral position, then be pointed in all the most extreme values 
+// This can be done by moving the joystick in a circle farthest away from neutral positon
+//For the touchpad we have no neutral position. Therefore it must only be touched in the most extreme places (No pun intended). 
+//This can be done by making a plus sign which starts and ends at the sides of the touchpad
 Position_Calibration adc_calibrate(adc_read_function read_function){
     
     uint8_t x;
@@ -175,16 +192,20 @@ Position_Calibration adc_calibrate(adc_read_function read_function){
     read_function(&x, &y);
     
     Position_Calibration cal;
+
+    //Set start position as neutral
     cal.neutral_x = x;
     cal.neutral_y = y;
     
-    int i = 0;
+    //set all values as start position
     uint8_t max_x = x;
     uint8_t min_x = x;
     uint8_t max_y = y;
     uint8_t min_y = y;
     
-   for(int i = 0; i < 5000; i++){
+   for(int i = 0; i < 5000; i++){ //for 5 seconds
+
+        //read position and if it is more extreme in one direction than previous min or max, then update min or max
         read_function(&x, &y);
         if (max_x < x){
             max_x = x;
@@ -203,6 +224,8 @@ Position_Calibration adc_calibrate(adc_read_function read_function){
         }
         _delay_ms(1);
     }
+    
+    //return Position_Calibration struct
     cal.max_x_pos = max_x;
     cal.min_x_pos = min_x;
     cal.max_y_pos = max_y;
@@ -213,6 +236,10 @@ Position_Calibration adc_calibrate(adc_read_function read_function){
 
 
 /*
+    Code to calibrate joystick and touchpad and then display the values which are collected
+    -----------------
+
+
     Position_Calibration cal_joy = adc_calibrate(adc_read_joystick);
     printf("Joystick Calibration Done\r\n------------\r\n");
     Position_Calibration cal_touch = adc_calibrate(adc_read_touchpad);
