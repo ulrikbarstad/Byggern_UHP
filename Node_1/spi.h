@@ -1,3 +1,6 @@
+#ifndef SPI_H
+#define SPI_H
+
 #include <stdint.h>
 
 typedef enum {
@@ -9,8 +12,10 @@ typedef enum {
 void spi_init();
 uint8_t spi_transfer(uint8_t data);
 void spi_write(uint8_t data);
-uint8_t spi_read();
-void spi_deselct_all();
+uint8_t spi_read(void);
+void spi_deselect_all(void);
 void spi_select_slave(SPI_Slave slave);
-void spi_write_nbits(uint8_t *data, int n);
-uint8_t spi_read_nbits(int n);
+void spi_write_nbytes(const uint8_t *data, int n);
+void spi_read_nbytes(uint8_t *data, int n);
+
+#endif

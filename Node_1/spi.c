@@ -7,12 +7,11 @@
 
 #define CS_DISPLAY PB2
 #define CS_IO PB3
-#define DC_DISPLAY PB1
+
 #define CS_CAN PB0
 
-void spi_init(){
-    DDRB |= (1 << PB4) 
-    | (1 << DC_DISPLAY) 
+void spi_init(void){
+    DDRB |= (1 << PB4)  
     | (1 << CS_IO) 
     | (1 << CS_DISPLAY) 
     | (1 << PB5) 
@@ -49,18 +48,18 @@ void spi_write(uint8_t data){
     (void)spi_transfer(data);
 }
 
-uint8_t spi_read(){
+uint8_t spi_read(void){
     return spi_transfer(0x00);
 }
 
-void spi_deselct_all(){
+void spi_deselect_all(void){
     PORTB |= (1 << CS_IO) 
     | (1 << CS_DISPLAY)
     | (1 << CS_CAN);
 }
 
 void spi_select_slave(SPI_Slave slave){
-    spi_deselct_all();
+    spi_deselect_all();
 
     switch(slave){
 
@@ -79,16 +78,16 @@ void spi_select_slave(SPI_Slave slave){
     }
 }
 
-void spi_write_nbits(uint8_t *data, int n){
+void spi_write_nbytes(const uint8_t *data, int n){
 
-    for(int i; i < n; i ++){
-        spi_write(*(data + i*8));
+    for(int i = 0; i < n; i ++){
+        spi_write(data[i]);
     }
 }
 
-uint8_t spi_read_nbits(int n){
-    for(int i; i < n; i++){
-        spi_read();
+void spi_read_nbytes(uint8_t *data, int n){
+    for(int i = 0; i < n; i++){
+        data[i] = spi_read();
     }
     
 

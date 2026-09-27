@@ -8,6 +8,7 @@
 #include "adc.h"
 #include "position.h"
 #include "spi.h"
+#include "oled.h"
 
 
 #include <stdlib.h>
@@ -34,6 +35,8 @@ int main(void)
     sram_init();
     uart_init();
     spi_init();
+    spi_deselect_all();
+    oled_init();
     FILE *uart_stream = fdevopen(uart_transmit, uart_recieve);
     stdout = uart_stream;
     stdin = uart_stream;
@@ -55,7 +58,12 @@ int main(void)
     Position_Calibration cal_joy = {245, 72, 240, 79, 165, 161};
 
     Position_Calibration cal_touch = {255, 2, 255, 2, 0, 0};
-    spi_select_slave(SPI_SLAVE_DISPLAY);
+    oled_clear();
+    oled_pos(OLED_PAGE_2, 10);
+    oled_print("Faen a KK");
+   
+
+    
 
 /*
     Position_Calibration cal_joy = adc_calibrate(adc_read_joystick);
@@ -66,6 +74,15 @@ int main(void)
 */
     while (1) {
         
+        
+        
+        
+
+        
+        
+
+        
+        /*
         Position pos_joy = adc_joystick_position(cal_joy);
         Position_Direction dir_joy = adc_joystick_direction(cal_joy, 10);
         Position pos_touch = adc_touchpad_position(cal_touch);
@@ -75,8 +92,8 @@ int main(void)
         printf("Joystick dir: %u\r\n", dir_joy);
         printf("Touchpod pos X: %i, Y: %i\r\n", pos_touch.x_pos, pos_touch.y_pos);
         printf("\n");
-
-        _delay_ms(5000);
+        */
+        
     }
     return 0;
 }
