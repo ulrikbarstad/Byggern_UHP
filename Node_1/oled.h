@@ -2,6 +2,14 @@
 #define OLED_H
 
 #include <stdint.h>
+#include <stdbool.h>
+
+typedef enum {
+    EASY_MODE = 0,
+    NORMAL_MODE,
+    HARD_MODE,
+    IMPOSIBLE
+} MenuOption;
 
 typedef enum {
     OLED_PAGE_0 = 0,
@@ -25,6 +33,8 @@ void oled_print(const char *text);
 void oled_clear(void);
 void oled_home(void);
 void oled_clear_line(OLED_Page page);
-
+void oled_main_menu(uint8_t selected);
+void oled_print_menu_item(OLED_Page page, const char *text, bool selected);
+const char *menu_option_to_string(MenuOption option);
 
 #endif

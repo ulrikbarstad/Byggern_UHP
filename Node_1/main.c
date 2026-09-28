@@ -9,6 +9,8 @@
 #include "position.h"
 #include "spi.h"
 #include "oled.h"
+#include "interrupt.h"
+#include "io.h"
 
 
 #include <stdlib.h>
@@ -20,6 +22,34 @@
 
 
 volatile uint8_t * const SRAM = (volatile uint8_t *)SRAM_BASE;
+
+MenuOption selected = EASY_MODE;
+
+void oled_menu_switch(Position_Direction dir){
+    switch (dir) {
+        case UP:
+            if (selected == EASY_MODE){
+                selected = IMPOSIBLE;
+                oled_main_menu(selected);
+            }else{
+                selected --;
+                oled_main_menu(selected);
+            }
+            break;
+        case DOWN:
+            if (selected == IMPOSIBLE){
+                selected = EASY_MODE;
+                oled_main_menu(selected);
+            }else{
+                selected ++;
+                oled_main_menu(selected);
+            }
+            break;
+
+            }
+}
+
+
 
 
 int main(void)
@@ -34,12 +64,21 @@ int main(void)
     */
     sram_init();
     uart_init();
+
+
+    
     spi_init();
     spi_deselect_all();
     oled_init();
+    joystick_timer_init();
+    adc_init();
+    joystick_button_init();
+    sei();
+    
     FILE *uart_stream = fdevopen(uart_transmit, uart_recieve);
     stdout = uart_stream;
     stdin = uart_stream;
+    
 
    
     // Mask PC4-PC7 so JTAG can use them.
@@ -53,15 +92,14 @@ int main(void)
     
     //SRAM_test();DISPLAY
     
-    adc_init();
+    
     
     Position_Calibration cal_joy = {245, 72, 240, 79, 165, 161};
 
     Position_Calibration cal_touch = {255, 2, 255, 2, 0, 0};
-    oled_clear();
-    oled_pos(OLED_PAGE_2, 10);
-    oled_print("Faen a KK");
-   
+
+    
+    oled_main_menu(selected);
 
     
 
@@ -74,13 +112,39 @@ int main(void)
 */
     while (1) {
         
-        
-        
-        
 
-        
-        
+        if (button_click) {
+            button_click = 0;
+            printf("Meny valgt: %s\r\n", menu_option_to_string(selected));
+        }
 
+
+        if(joystick_tick){
+            joystick_tick = 0;
+            Position_Direction dir = adc_joystick_direction(cal_joy, 10);
+            if(dir != 0) {
+                oled_menu_switch(dir);
+    
+            }
+        }
+
+        Buttons buttons = io_read_buttons();
+
+        if (buttons.R1) {
+            printf("R1 pressed\r\n");
+        }
+
+        if (buttons.L1) {
+            printf("L1 pressed\r\n");
+        }
+
+        if (buttons.NU) {
+            printf("Nav up\r\n");
+        }
+
+        if (buttons.NB) {
+            printf("Nav button\r\n");
+        }
         
         /*
         Position pos_joy = adc_joystick_position(cal_joy);
@@ -93,6 +157,8 @@ int main(void)
         printf("Touchpod pos X: %i, Y: %i\r\n", pos_touch.x_pos, pos_touch.y_pos);
         printf("\n");
         */
+        
+        _delay_ms(500);
         
     }
     return 0;

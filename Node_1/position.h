@@ -18,11 +18,11 @@ typedef struct {
 } Position_Calibration;
 
 typedef enum {
+    NEUTRAL,
     LEFT, 
     RIGHT, 
     UP, 
-    DOWN, 
-    NEUTRAL
+    DOWN
 } Position_Direction;
 
 #endif

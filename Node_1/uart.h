@@ -1,7 +1,9 @@
 #ifndef UART_H
 #define UART_H
 
-void uart_init();
+#include <stdio.h>
+
+void uart_init(void);
 
 int uart_transmit(char data, FILE *stream);
 
