@@ -246,5 +246,18 @@ Position_Calibration adc_calibrate(adc_read_function read_function){
     printf("Joystick Calibration Done\r\n------------\r\n");
     printf("Joystick Calibration: \r\nmax x: %u \r\nmin x: %u \r\nmax y: %u \r\nmin y: %u \r\nneutral x: %u \r\nneutral y: %u \r\n------------\r\nToucpad Calibration: \r\nmax x: %u \r\nmin x: %u \r\nmax y: %u \r\nmin y: %u \r\nneutral x: %u \r\nneutral y: %u\r\n------------\r\n\r\n", cal_joy.max_x_pos, cal_joy.min_x_pos, cal_joy.max_y_pos, cal_joy.min_y_pos, cal_joy.neutral_x, cal_joy.neutral_y, cal_touch.max_x_pos, cal_touch.min_x_pos, cal_touch.max_y_pos, cal_touch.min_y_pos, cal_touch.neutral_x, cal_touch.neutral_y);
 */
+
+
+/*
+        Position pos_joy = adc_joystick_position(cal_joy);
+        Position_Direction dir_joy = adc_joystick_direction(cal_joy, 10);
+        Position pos_touch = adc_touchpad_position(cal_touch);
+        
+
+        printf("Joystick pos X: %i, Y: %i\r\n", pos_joy.x_pos, pos_joy.y_pos);
+        printf("Joystick dir: %u\r\n", dir_joy);
+        printf("Touchpod pos X: %i, Y: %i\r\n", pos_touch.x_pos, pos_touch.y_pos);
+        printf("\n");
+        */
     
 

@@ -4,7 +4,7 @@
 #include "fonts.h"
 #include <avr/pgmspace.h>
 #include <stdbool.h>
-#include "position.h"
+
 
 #define DC_DISPLAY PB1
 
@@ -221,24 +221,28 @@ const char *menu_option_to_string(MenuOption option_mode){
 
 
 
-void oled_menu_switch(Position_Direction dir, MenuOption selected_mode){
+MenuOption oled_menu_switch(Position_Direction dir, MenuOption selected_mode){
     switch (dir) {
         case UP:
             if (selected_mode == EASY_MODE){
                 selected_mode = IMPOSSIBLE;
                 oled_main_menu(selected_mode);
+                return selected_mode;
             }else{
                 selected_mode --;
                 oled_main_menu(selected_mode);
+                return selected_mode;
             }
             break;
         case DOWN:
             if (selected_mode == IMPOSSIBLE){
                 selected_mode = EASY_MODE;
                 oled_main_menu(selected_mode);
+                return selected_mode;
             }else{
                 selected_mode ++;
                 oled_main_menu(selected_mode);
+                return selected_mode;
             }
             break;
 

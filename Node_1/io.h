@@ -1,6 +1,8 @@
 #ifndef IO_H
 #define IO_H
 #include <stdint.h>
+#include "position.h"
+#include "oled.h"
 
 
 typedef struct __attribute__((packed)) {
@@ -40,5 +42,8 @@ typedef struct __attribute__((packed)) {
 } Buttons;
 
 Buttons io_read_buttons(void);
+void io_check_joystick_pressed(MenuOption selected_mode);
+MenuOption io_check_joystick_tick(MenuOption selected_mode, Position_Calibration cal_joy);
+void io_check_buttons();
 
 #endif

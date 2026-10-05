@@ -25,7 +25,7 @@ void spi_init(void){
    
     PORTB |= (1 << CS_IO) 
     | (1 << CS_DISPLAY)
-    | (1 << CS_CAN); // deselect  IO og display
+    | (1 << CS_CAN); // deselect  IO, display og CAN
 
     SPCR = (1 << SPE) 
     | (1 << MSTR) 
@@ -34,31 +34,31 @@ void spi_init(void){
 
 }
 
-uint8_t spi_transfer(uint8_t data){
+uint8_t spi_transfer(uint8_t data){ //overfører data via spi
     SPDR = data;
 
-    while(!(SPSR & (1 << SPIF))){
+    while(!(SPSR & (1 << SPIF))){ //SPSR = SPI status register
         ;
     }
-    return SPDR;
+    return SPDR; //returns spi data register
 }
 
 void spi_write(uint8_t data){
 
-    (void)spi_transfer(data);
+    (void)spi_transfer(data); // sender data
 }
 
 uint8_t spi_read(void){
-    return spi_transfer(0x00);
+    return spi_transfer(0x00); // Sender dummi bits en vei og leser dataen som komme tilbake
 }
 
-void spi_deselect_all(void){
+void spi_deselect_all(void){ // setter alle CS til 1 som betyr deselect
     PORTB |= (1 << CS_IO) 
     | (1 << CS_DISPLAY)
     | (1 << CS_CAN);
 }
 
-void spi_select_slave(SPI_Slave slave){
+void spi_select_slave(SPI_Slave slave){ // setter riktig slave til 0, retsen til 1
     spi_deselect_all();
 
     switch(slave){

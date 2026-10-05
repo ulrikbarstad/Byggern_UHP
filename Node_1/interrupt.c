@@ -3,7 +3,7 @@
 #include "interrupt.h"
 
 volatile uint8_t joystick_tick = 0;
-volatile uint8_t button_click = 0;
+volatile uint8_t joystick_pressed = 0;
 
 void joystick_timer_init(void){
     // Timer0 CTC mode
@@ -22,8 +22,8 @@ ISR(TIMER0_COMP_vect){
 }
 
 void joystick_button_init(void){
-    DDRD &= ~(1 << PD2);   
-    PORTD |= (1 << PD2); 
+    DDRD &= ~(1 << PD2);   //sets pd2 as input
+    PORTD |= (1 << PD2);   //
 
     MCUCR &= ~(1 << ISC00);
     MCUCR |=  (1 << ISC01);
@@ -35,5 +35,5 @@ void joystick_button_init(void){
     sei();
 }
 ISR(INT0_vect){
-    button_click = 1;
+    joystick_pressed = 1;
 }

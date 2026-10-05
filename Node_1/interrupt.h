@@ -3,7 +3,7 @@
 
 #include <avr/interrupt.h>
 extern volatile uint8_t joystick_tick;
-extern volatile uint8_t button_click;
+extern volatile uint8_t joystick_pressed;
 
 void joystick_timer_init(void);
 void joystick_button_init(void);

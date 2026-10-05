@@ -11,6 +11,8 @@
 #include "oled.h"
 #include "interrupt.h"
 #include "io.h"
+#include "can.h"
+#include "mcp2515.h"
 
 
 #include <stdlib.h>
@@ -49,8 +51,10 @@ int main(void)
     joystick_timer_init();
     adc_init();
     joystick_button_init();
+    mcp2515_init(true);
     sei();
     
+
     FILE *uart_stream = fdevopen(uart_transmit, uart_recieve);
     stdout = uart_stream;
     stdin = uart_stream;
@@ -77,6 +81,36 @@ int main(void)
     MenuOption selected_mode = EASY_MODE;
     oled_main_menu(selected_mode);
 
+    CAN_Message tx = {
+        .id = 0x123,
+        .length = 3,
+        .data = {0xAA, 0xBB, 0xCC}
+    };
+    CAN_Message rx;
+
+    can_send(&tx);
+
+    _delay_ms(10);
+
+    if (can_receive(&rx)) {
+
+        printf("Received message:\r\n");
+        printf("ID:     0x%03X\r\n", rx.id);
+        printf("Length: %u\r\n", rx.length);
+        printf("Data: ");
+
+        for (uint8_t i = 0; i < rx.length; i++) {
+            printf("0x%02X ", rx.data[i]);
+        }
+
+        printf("\r\n");
+    }
+    else {
+        printf("No CAN message received\r\n");
+    }
+
+
+
     
 
 /*
@@ -88,54 +122,22 @@ int main(void)
 */
     while (1) {
         
-
-        if (button_click) {
-            button_click = 0;
-            printf("Meny valgt: %s\r\n", menu_option_to_string(selected_mode));
-        }
-
-
-        if(joystick_tick){
-            joystick_tick = 0;
-            Position_Direction dir = adc_joystick_direction(cal_joy, 10);
-            if(dir != 0) {
-                oled_menu_switch(dir);
-    
-            }
-        }
-
-        Buttons buttons = io_read_buttons();
-
-        if (buttons.R1) {
-            printf("R1 pressed\r\n");
-        }
-
-        if (buttons.L1) {
-            printf("L1 pressed\r\n");
-        }
-
-        if (buttons.NU) {
-            printf("Nav up\r\n");
-        }
-
-        if (buttons.NB) {
-            printf("Nav button\r\n");
-        }
-        
         /*
-        Position pos_joy = adc_joystick_position(cal_joy);
-        Position_Direction dir_joy = adc_joystick_direction(cal_joy, 10);
-        Position pos_touch = adc_touchpad_position(cal_touch);
-        
+        io_check_joystick_pressed(selected_mode);
+        selected_mode = io_check_joystick_tick(selected_mode, cal_joy);
+        io_check_buttons();
 
-        printf("Joystick pos X: %i, Y: %i\r\n", pos_joy.x_pos, pos_joy.y_pos);
-        printf("Joystick dir: %u\r\n", dir_joy);
-        printf("Touchpod pos X: %i, Y: %i\r\n", pos_touch.x_pos, pos_touch.y_pos);
-        printf("\n");
         */
+
+        //can_write(0b00000000, 1, 0x0);
+
+        //mcp2515_reset();
+      
+       
         
-        _delay_ms(500);
-        
+        _delay_ms(1000);
+                    
+
     }
     return 0;
 }
