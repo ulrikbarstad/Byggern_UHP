@@ -8,7 +8,7 @@ typedef enum {
     EASY_MODE = 0,
     NORMAL_MODE,
     HARD_MODE,
-    IMPOSIBLE
+    IMPOSSIBLE
 } MenuOption;
 
 typedef enum {
@@ -36,5 +36,6 @@ void oled_clear_line(OLED_Page page);
 void oled_main_menu(uint8_t selected);
 void oled_print_menu_item(OLED_Page page, const char *text, bool selected);
 const char *menu_option_to_string(MenuOption option);
+void oled_menu_switch(Position_Direction dir);
 
 #endif

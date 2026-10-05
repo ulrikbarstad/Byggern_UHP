@@ -4,6 +4,7 @@
 #include "fonts.h"
 #include <avr/pgmspace.h>
 #include <stdbool.h>
+#include "position.h"
 
 #define DC_DISPLAY PB1
 
@@ -189,18 +190,18 @@ void oled_print_menu_item(OLED_Page page, const char *text, bool selected){
 
 
 
-void oled_main_menu(uint8_t selected)
+void oled_main_menu(MenuOption selected_mode)
 {
     oled_clear();
 
-    oled_print_menu_item(OLED_PAGE_0, "Easy Mode", selected == 0);
-    oled_print_menu_item(OLED_PAGE_2, "Normal Mode", selected == 1);
-    oled_print_menu_item(OLED_PAGE_4, "Hard Mode", selected == 2);
-    oled_print_menu_item(OLED_PAGE_6, "Impossible", selected == 3);
+    oled_print_menu_item(OLED_PAGE_0, "Easy Mode", selected_mode == 0);
+    oled_print_menu_item(OLED_PAGE_2, "Normal Mode", selected_mode == 1);
+    oled_print_menu_item(OLED_PAGE_4, "Hard Mode", selected_mode == 2);
+    oled_print_menu_item(OLED_PAGE_6, "Impossible", selected_mode == 3);
 }
 
-const char *menu_option_to_string(MenuOption option){
-    switch (option) {
+const char *menu_option_to_string(MenuOption option_mode){
+    switch (option_mode) {
         case EASY_MODE:
             return "Easy mode";
 
@@ -210,10 +211,36 @@ const char *menu_option_to_string(MenuOption option){
         case HARD_MODE:
             return "Hard mode";
 
-        case IMPOSIBLE:
+        case IMPOSSIBLE:
             return "Impossible";
 
         default:
             return "Unknown";
     }
+}
+
+
+
+void oled_menu_switch(Position_Direction dir, MenuOption selected_mode){
+    switch (dir) {
+        case UP:
+            if (selected_mode == EASY_MODE){
+                selected_mode = IMPOSSIBLE;
+                oled_main_menu(selected_mode);
+            }else{
+                selected_mode --;
+                oled_main_menu(selected_mode);
+            }
+            break;
+        case DOWN:
+            if (selected_mode == IMPOSSIBLE){
+                selected_mode = EASY_MODE;
+                oled_main_menu(selected_mode);
+            }else{
+                selected_mode ++;
+                oled_main_menu(selected_mode);
+            }
+            break;
+
+            }
 }

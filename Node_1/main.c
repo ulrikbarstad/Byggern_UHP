@@ -23,31 +23,7 @@
 
 volatile uint8_t * const SRAM = (volatile uint8_t *)SRAM_BASE;
 
-MenuOption selected = EASY_MODE;
 
-void oled_menu_switch(Position_Direction dir){
-    switch (dir) {
-        case UP:
-            if (selected == EASY_MODE){
-                selected = IMPOSIBLE;
-                oled_main_menu(selected);
-            }else{
-                selected --;
-                oled_main_menu(selected);
-            }
-            break;
-        case DOWN:
-            if (selected == IMPOSIBLE){
-                selected = EASY_MODE;
-                oled_main_menu(selected);
-            }else{
-                selected ++;
-                oled_main_menu(selected);
-            }
-            break;
-
-            }
-}
 
 
 
@@ -98,8 +74,8 @@ int main(void)
 
     Position_Calibration cal_touch = {255, 2, 255, 2, 0, 0};
 
-    
-    oled_main_menu(selected);
+    MenuOption selected_mode = EASY_MODE;
+    oled_main_menu(selected_mode);
 
     
 
@@ -115,7 +91,7 @@ int main(void)
 
         if (button_click) {
             button_click = 0;
-            printf("Meny valgt: %s\r\n", menu_option_to_string(selected));
+            printf("Meny valgt: %s\r\n", menu_option_to_string(selected_mode));
         }
 
 
