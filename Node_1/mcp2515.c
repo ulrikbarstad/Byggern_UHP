@@ -72,7 +72,7 @@ void mcp2515_init(bool loopback){
 
     mcp2515_bit_modify(MCP_2515_CNF1, 
                         MCP_2515_BRP_MASK, 
-                        MCP_2515_BRP_VAL); // Set BRP bits to 0 so that TQ = 125 ns 16MHz oscillator
+                        MCP_2515_BRP_VAL); // Set BRP bits to 1 so that TQ = 250 ns 16MHz oscillator
 
     mcp2515_bit_modify(MCP_2515_CNF1, 
                         MCP_2515_SJW_MASK, 
@@ -84,19 +84,19 @@ void mcp2515_init(bool loopback){
 
     mcp2515_bit_modify(MCP_2515_CNF2, 
                         MCP_2515_SAM_MASK, 
-                        MCP_2515_SAM_VAL); //Set SAM to 0
+                        MCP_2515_SAM_VAL); //Set SAM to 0 so that bus line is sampled once at sample point
     
     mcp2515_bit_modify(MCP_2515_CNF2, 
                         MCP_2515_PHSEG1_MASK, 
-                        MCP_2515_PHSEG1_VAL); //Set phseg1 to 110
+                        MCP_2515_PHSEG1_VAL); //Set phseg1 to 010 so that phase_seg1 is 3*tq
 
     mcp2515_bit_modify(MCP_2515_CNF2, 
                         MCP_2515_PRSEG_MASK, 
-                        MCP_2515_PRSEG_VAL); //Set prseg to 001
+                        MCP_2515_PRSEG_VAL); //Set prseg to 000 so that prop_seg is 1*tq
 
     mcp2515_bit_modify(MCP_2515_CNF3, 
                         MCP_2515_PHSEG2_MASK, 
-                        MCP_2515_PHSEG2_VAL); //Set prseg to 101
+                        MCP_2515_PHSEG2_VAL); //Set phseg2 to 010 so that phase_seg2 is 3*tq
 
     mcp2515_bit_modify(MCP_2515_CANINTF, 0b00000001, 0b00000000); // clear interupt RX0IF
 

@@ -13,6 +13,7 @@
 #include "io.h"
 #include "can.h"
 #include "mcp2515.h"
+#include "joystick.h"
 
 
 #include <stdlib.h>
@@ -51,7 +52,7 @@ int main(void)
     joystick_timer_init();
     adc_init();
     joystick_button_init();
-    mcp2515_init(true);
+    mcp2515_init(false);
     sei();
     
 
@@ -82,31 +83,41 @@ int main(void)
     oled_main_menu(selected_mode);
 
     CAN_Message tx = {
-        .id = 0x123,
-        .length = 3,
-        .data = {0xAA, 0xBB, 0xCC}
-    };
+            .id = 0x23,
+            .length = 3,
+            .data = {0xAA, 0xBB, 0xCC}
+        };
     CAN_Message rx;
 
-    can_send(&tx);
 
-    _delay_ms(10);
+    while (1) {
 
-    if (can_receive(&rx)) {
+        joystick_send_position(cal_joy);
+        _delay_ms(2000);
 
-        printf("Received message:\r\n");
-        printf("ID:     0x%03X\r\n", rx.id);
-        printf("Length: %u\r\n", rx.length);
-        printf("Data: ");
+        /*
+        can_send(&tx);
 
-        for (uint8_t i = 0; i < rx.length; i++) {
-            printf("0x%02X ", rx.data[i]);
+        printf("CAN sent\r\n");
+
+        _delay_ms(2000);
+
+        if(can_receive(&rx)){
+            printf("Received message:\r\n");
+            printf("ID:     0x%03X\r\n", rx.id);
+            printf("Length: %u\r\n", rx.length);
+            printf("Data: ");
+
+            for (uint8_t i = 0; i < rx.length; i++) {
+                printf("0x%02X ", rx.data[i]);
+            }
+
+                printf("\r\n");
         }
-
-        printf("\r\n");
-    }
-    else {
-        printf("No CAN message received\r\n");
+        else {
+            printf("No CAN message received\r\n");
+        }
+        */
     }
 
 
@@ -120,7 +131,7 @@ int main(void)
     printf("Joystick Calibration Done\r\n------------\r\n");
     printf("Joystick Calibration: \r\nmax x: %u \r\nmin x: %u \r\nmax y: %u \r\nmin y: %u \r\nneutral x: %u \r\nneutral y: %u \r\n------------\r\nToucpad Calibration: \r\nmax x: %u \r\nmin x: %u \r\nmax y: %u \r\nmin y: %u \r\nneutral x: %u \r\nneutral y: %u\r\n------------\r\n\r\n", cal_joy.max_x_pos, cal_joy.min_x_pos, cal_joy.max_y_pos, cal_joy.min_y_pos, cal_joy.neutral_x, cal_joy.neutral_y, cal_touch.max_x_pos, cal_touch.min_x_pos, cal_touch.max_y_pos, cal_touch.min_y_pos, cal_touch.neutral_x, cal_touch.neutral_y);
 */
-    while (1) {
+    
         
         /*
         io_check_joystick_pressed(selected_mode);
@@ -135,9 +146,6 @@ int main(void)
       
        
         
-        _delay_ms(1000);
-                    
-
-    }
+       
     return 0;
 }
