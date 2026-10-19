@@ -91,9 +91,9 @@ int main(void)
 
 
     while (1) {
-
-        joystick_send_position(cal_joy);
-        _delay_ms(2000);
+        _delay_ms(1);
+        joystick_send_position();
+        
 
         /*
         can_send(&tx);

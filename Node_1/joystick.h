@@ -4,7 +4,7 @@
 #include "position.h"
 
 
-void joystick_send_position(Position_Calibration joystickCalibration);
+void joystick_send_position();
 
 
 #endif

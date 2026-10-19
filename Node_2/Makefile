@@ -11,6 +11,8 @@ SOURCE_FILES = \
 	uart.c \
     time.c \
     can.c \
+	joystick.c \
+	servo.c \
 #	filenameN.c
 
 # Feel free to ignore anything below this line

@@ -4,6 +4,8 @@
 #include "uart.h"
 #include "time.h"
 #include "can.h"
+#include "joystick.h"
+#include "servo.h"
 
 #define F_CPU 84000000
 
@@ -23,6 +25,10 @@ int main()
     SystemInit();
     PMC->PMC_PCER0 = 1u << ID_PIOB; // enable clock
 
+    
+    
+
+
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
 
     /*
@@ -33,36 +39,21 @@ int main()
 
     //Uncomment after including uart above
     uart_init(F_CPU, 9600);
-
-    can_init((CanInit){.brp = 20, .sjw = 0, .phase1 = 2, .phase2 = 2, .propag = 0, .smp = 0}, 0);
-    CanMsg rx;
-
     
 
+    can_init((CanInit){.brp = 20, .sjw = 0, .phase1 = 2, .phase2 = 2, .propag = 0, .smp = 0}, 0);
+    servo_init();
+    //time_spinFor(msecs(2000));
+
+    int32_t current_pulse_width = 1500;
+    int32_t max_increment = 300;
+    Joystick_X_Calibration calibration = {.max_x_pos = 247, .min_x_pos = 68, .neutral_buffer = 5, .neutral_x = 165};
 
     while (1)
     {
-        /* code */
-        time_spinFor(msecs(2000));
         
-    
-
-        if (can_rx(&rx)) {
-
-            printf("Received message:\r\n");
-            printf("ID:     0x%03X\r\n", rx.id);
-            printf("Length: %u\r\n", rx.length);
-            printf("Data: ");
-
-            for (uint8_t i = 0; i < rx.length; i++) {
-                printf("0x%02X ", rx.byte[i]);
-            }
-
-                printf("\r\n\r\n");
-        }
-        else {
-            printf("No CAN message received\r\n\r\n");
-        }
+        time_spinFor(msecs(3));
+        servo_move(&current_pulse_width, max_increment, calibration);
 
     }
     

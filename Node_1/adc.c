@@ -66,7 +66,6 @@ void adc_read_touchpad(uint8_t *x_touch, uint8_t *y_touch){
     *x_touch = *ADC;
 }
 
-
 // takes in calibration struct, reads position and returns a position in x and y direction from -100 to 100. 
 // Calibration struct contains values for maximum and minimum x and y value as well as the values they have when neutral
 Position adc_joystick_position(Position_Calibration calibration){ 
@@ -112,6 +111,7 @@ Position adc_joystick_position(Position_Calibration calibration){
 }
 
 
+
 // returns direction of joystick. Takes in calibration values and a neutral limit to set a limit for 
 // how much the joystick must be removed from center to go from NEUTRAL to another direction 
 Position_Direction adc_joystick_direction(Position_Calibration calibration, uint8_t neutral_limit){
@@ -155,6 +155,11 @@ Position_Direction adc_joystick_direction(Position_Calibration calibration, uint
 }
 
 
+
+
+
+
+/*
 //Finds position of touchpad. Takes in calibration values so that the position can be returned as a value between -100 and 100. 
 //Uses same code as adc_touchpad_position but now we dont need a neutral position. Ignores neutral values of Position_Calibration struct
 Position adc_touchpad_position(Position_Calibration calibration){
@@ -233,7 +238,7 @@ Position_Calibration adc_calibrate(adc_read_function read_function){
     return cal;
 }
 
-
+*/
 
 /*
     Code to calibrate joystick and touchpad and then display the values which are collected
