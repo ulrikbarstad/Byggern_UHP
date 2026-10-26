@@ -13,6 +13,7 @@ SOURCE_FILES = \
     can.c \
 	joystick.c \
 	servo.c \
+	adc.c \
 #	filenameN.c
 
 # Feel free to ignore anything below this line

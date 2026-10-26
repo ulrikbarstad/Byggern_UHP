@@ -6,6 +6,7 @@
 #include "can.h"
 #include "joystick.h"
 #include "servo.h"
+#include "adc.h"
 
 #define F_CPU 84000000
 
@@ -43,18 +44,19 @@ int main()
 
     can_init((CanInit){.brp = 20, .sjw = 0, .phase1 = 2, .phase2 = 2, .propag = 0, .smp = 0}, 0);
     servo_init();
+    adc_init();
     //time_spinFor(msecs(2000));
 
     int32_t current_pulse_width = 1500;
-    int32_t max_increment = 300;
+    int32_t max_increment = 60;
     Joystick_X_Calibration calibration = {.max_x_pos = 247, .min_x_pos = 68, .neutral_buffer = 5, .neutral_x = 165};
 
-    while (1)
-    {
-        
-        time_spinFor(msecs(3));
+    while (1){
+        time_spinFor(msecs(50));
         servo_move(&current_pulse_width, max_increment, calibration);
 
+
+        printf("adc: %lu\r\n", adc_read());
     }
     
 }
