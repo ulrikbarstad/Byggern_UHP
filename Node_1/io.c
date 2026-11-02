@@ -44,22 +44,11 @@ MenuOption io_check_joystick_tick(MenuOption selected_mode, Position_Calibration
     return selected_mode;
 }
 
-void io_check_buttons(){
+void io_check_buttons(int8_t* r6_pressed){
     Buttons buttons = io_read_buttons();
-
-        if (buttons.R1) {
-            printf("R1 pressed\r\n");
+        if (buttons.R6){
+            *r6_pressed = 1;
         }
-
-        if (buttons.L1) {
-            printf("L1 pressed\r\n");
-        }
-
-        if (buttons.NU) {
-            printf("Nav up\r\n");
-        }
-
-        if (buttons.NB) {
-            printf("Nav button\r\n");
-        }
+        else {*r6_pressed = 0;}
+       
 }

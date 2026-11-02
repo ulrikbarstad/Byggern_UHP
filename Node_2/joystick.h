@@ -5,17 +5,21 @@
 typedef struct  {
     int32_t x_pos;
     int32_t y_pos;
+    int32_t r6_pressed;
 } Joystick_Position;
 
 typedef struct {
-    int32_t max_x_pos;
-    int32_t min_x_pos;
-    int32_t neutral_x;
+    int32_t max_pos;
+    int32_t min_pos;
+    
+    int32_t neutral;
     int32_t neutral_buffer;
-} Joystick_X_Calibration;
+} Joystick_Calibration;
 
-int32_t joystick_read_x_position();
+Joystick_Position joystick_read_position();
 void joystick_print_position();
-void joystick_scale_x_position(int32_t* x_pos, Joystick_X_Calibration calibration);
+void joystick_scale_position(int32_t* pos, Joystick_Calibration calibration);
+
+
 
 #endif

@@ -14,6 +14,8 @@ SOURCE_FILES = \
 	joystick.c \
 	servo.c \
 	adc.c \
+	encoder.c \
+	motor.c
 #	filenameN.c
 
 # Feel free to ignore anything below this line
@@ -64,7 +66,7 @@ debug: $(ELF)
 .PHONY: flash
 flash: $(ELF)
 	#./sam/write_bin.sh sam/openocd.cfg $(BUILD_DIR)/main.elf
-	if pgr openocd; then killall -s 9 openocd; fi
+	if pgrep openocd; then killall -s 9 openocd; fi
 	openocd -f sam/openocd.cfg -c "program ${BUILD_DIR}/main.elf verify reset exit"
 
 

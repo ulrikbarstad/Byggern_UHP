@@ -4,7 +4,7 @@
 #include "position.h"
 
 
-void joystick_send_position();
+void joystick_send_position(int8_t r6_pressed);
 
 
 #endif

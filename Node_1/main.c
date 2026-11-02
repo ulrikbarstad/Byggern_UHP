@@ -89,10 +89,14 @@ int main(void)
         };
     CAN_Message rx;
 
+    int8_t r6_pressed = 0;
+
 
     while (1) {
         _delay_ms(1);
-        joystick_send_position();
+        io_check_buttons(&r6_pressed);
+        joystick_send_position(r6_pressed);
+    
         
 
         /*

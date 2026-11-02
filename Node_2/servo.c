@@ -11,7 +11,7 @@ void servo_init(){
     PMC->PMC_WPMR = 0x504D4300; // Disables write protect mode register
 
     PMC->PMC_PCER1 |= (1 << 4); // Enables peripheral clock for PWM
-    PWM->PWM_CLK = 0; // set PREA (prescaler for clock A) to 1 so that CLK = MCK/DIV_A = 84*10⁶ / DIV_A
+    PWM->PWM_CLK &= ~(PWM_CLK_PREA_Msk); // set PREA (prescaler for clock A) to 1 so that CLK = MCK/DIV_A = 84*10⁶ / DIV_A
     PWM->PWM_CLK |= 84; // set Div A to 84 so that CLK A = 1*10⁶
 
     REG_PWM_CMR1 &= ~(PWM_CMR_CALG); //Sets CALG to 0 so that PWM is left aligned
@@ -33,10 +33,9 @@ int32_t servo_pulse_width_guard(int32_t pulse_width){ //this is a guard which co
     return pulse_width;
 }
 
-int32_t servo_get_increment(int32_t max_increment, Joystick_X_Calibration calibration){
-    int32_t x_pos = joystick_read_x_position();
-    joystick_scale_x_position(&x_pos, calibration);
-    int32_t increment = (max_increment * x_pos) / 100;
+int32_t servo_get_increment(int32_t y_pos, int32_t max_increment, Joystick_Calibration calibration){
+    joystick_scale_position(&y_pos, calibration);
+    int32_t increment = (max_increment * y_pos) / 100;
     return increment;
 }
 
@@ -45,10 +44,10 @@ void servo_update_pulse_width(int32_t pulse_width){ //This updates pulse width i
     REG_PWM_CDTY1 = pulse_width;
 }
 
-void servo_move(int32_t* current_pulse_width, int32_t max_increment, Joystick_X_Calibration calibration){
-    int32_t increment = servo_get_increment(max_increment, calibration);
+void servo_move(int32_t y_pos, int32_t* current_pulse_width, int32_t max_increment, Joystick_Calibration calibration){
+    int32_t increment = servo_get_increment(y_pos, max_increment, calibration);
     *current_pulse_width = servo_pulse_width_guard(*current_pulse_width - increment);
-    printf("increment %i \r\n\r\n pw %i \r\n\r\n" , increment , *current_pulse_width);
+    //printf("increment %i \r\n\r\n pw %i \r\n\r\n" , increment , *current_pulse_width);
     servo_update_pulse_width(*current_pulse_width);
 }
 

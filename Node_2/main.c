@@ -7,6 +7,8 @@
 #include "joystick.h"
 #include "servo.h"
 #include "adc.h"
+#include "encoder.h"
+#include "motor.h"
 
 #define F_CPU 84000000
 
@@ -45,18 +47,56 @@ int main()
     can_init((CanInit){.brp = 20, .sjw = 0, .phase1 = 2, .phase2 = 2, .propag = 0, .smp = 0}, 0);
     servo_init();
     adc_init();
+    encoder_init();
+    motor_init();
     //time_spinFor(msecs(2000));
 
     int32_t current_pulse_width = 1500;
     int32_t max_increment = 60;
-    Joystick_X_Calibration calibration = {.max_x_pos = 247, .min_x_pos = 68, .neutral_buffer = 5, .neutral_x = 165};
+    Joystick_Calibration calibration_x = {.max_pos = 248, .min_pos = 70, .neutral_buffer = 5, .neutral = 166};
+    Joystick_Calibration calibration_y = {.max_pos = 247, .min_pos = 68, .neutral_buffer = 5, .neutral = 165};
+    Joystick_Position joystick_pos = joystick_read_position();
+    Encoder_Data encoder_data = encoder_get_data();
+    int32_t ref = 0;
+    int32_t integral_value = 0;
+    int32_t i = 0;
+    int32_t servo_PWM_val = 1500;
+    int32_t old_joystick_y_pos = 165;
 
     while (1){
-        time_spinFor(msecs(50));
-        servo_move(&current_pulse_width, max_increment, calibration);
+        joystick_pos = joystick_read_position();
 
+        if (joystick_pos.y_pos >= 160 &&
+            joystick_pos.y_pos <= 170)
+        {
+            old_joystick_y_pos = 165;
+        }
+        else if (joystick_pos.y_pos != 0)
+        {
+            old_joystick_y_pos = joystick_pos.y_pos;
+        }
+                
+        servo_PWM_val = 1100 + ((old_joystick_y_pos - 68) * 800) / 179;
+            
+        printf("pressed = %i \r\n\r\n", joystick_pos.r6_pressed);
 
-        printf("adc: %lu\r\n", adc_read());
+        //printf("xpos: %i\r\n", measured_pos);
+        //time_spinFor(msecs(1));
+        
+        servo_update_pulse_width(servo_pulse_width_guard(servo_PWM_val));
+        printf("%i\r\n", servo_PWM_val);
+        
+        //servo_move(joystick_pos.y_pos, &current_pulse_width, max_increment, calibration_y);
+        motor_update_ref(&ref, joystick_pos.x_pos, 300, calibration_x);
+        encoder_data = encoder_get_data();
+        motor_PI_control(encoder_data.pos, ref, &integral_value, 0.1f, 0.0f);
+
+        //motor_update_pulse_width(20);
+        //printf("adc: %lu\r\n", adc_read());
+        //encoder_print_status();
+        
+        time_spinFor(msecs(3));
+
+        //motor_control_by_joystick(measured_pos.x_pos);
     }
-    
 }

@@ -5,13 +5,16 @@
 
 
 
-int32_t joystick_read_x_position(){
+Joystick_Position joystick_read_position(){
     CanMsg rx;
+    Joystick_Position pos = {.x_pos = 165, .y_pos = 0, .r6_pressed = 0};
     if (can_rx(&rx)) {
-        return rx.byte[0];
+        pos.x_pos = rx.byte[0];
+        pos.y_pos = rx.byte[1];
+        pos.r6_pressed = rx.byte[2];
         }
     
-    return 165; 
+    return pos; 
 }
 
 void joystick_print_position(){
@@ -36,21 +39,22 @@ void joystick_print_position(){
 }
 
 //Scales joystick x position from calibration values to -100 to 100. Deadzone of 
-void joystick_scale_x_position(int32_t* x_pos, Joystick_X_Calibration calibration){
+void joystick_scale_position(int32_t* pos, Joystick_Calibration calibration){
     //set x_pos
-    if (*x_pos <= calibration.neutral_x + calibration.neutral_buffer && *x_pos >= calibration.neutral_x - calibration.neutral_buffer){ //if x_pos is in neutral position +- buffer Then x is 0
-        *x_pos = 0;
+    if (*pos <= calibration.neutral + calibration.neutral_buffer && *pos >= calibration.neutral - calibration.neutral_buffer){ //if pos is in neutral position +- buffer Then y is 0
+        *pos = 0;
     }
 
-    // x != neutral position, check if x is positive. Then we get the difference between x and neutral position and scales it so that it is between 0 and 100 
-    else if(*x_pos > calibration.neutral_x){ 
-        *x_pos =
-            ((*x_pos - calibration.neutral_x) * 100) /
-            (calibration.max_x_pos - calibration.neutral_x);
+    // y != neutral position, check if y is positive. Then we get the difference between y and neutral position and scales it so that it is between 0 and 100 
+    else if(*pos > calibration.neutral){ 
+        *pos =
+            ((*pos - calibration.neutral) * 100) /
+            (calibration.max_pos - calibration.neutral);
     }
-    else{ // same as last else if but now we do it so that x is negative. 
-        *x_pos =
-            -((calibration.neutral_x - *x_pos) * 100) /
-            (calibration.neutral_x - calibration.min_x_pos);
+    else{ // same as last else if but now we do it so that y is negative. 
+        *pos =
+            -((calibration.neutral - *pos) * 100) /
+            (calibration.neutral - calibration.min_pos);
     }
 }
+
