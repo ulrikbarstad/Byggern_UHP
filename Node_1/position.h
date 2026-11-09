@@ -19,10 +19,10 @@ typedef struct {
 
 typedef enum {
     NEUTRAL,
+    DOWN,
+    UP,
     LEFT, 
-    RIGHT, 
-    UP, 
-    DOWN
+    RIGHT
 } Position_Direction;
 
 #endif

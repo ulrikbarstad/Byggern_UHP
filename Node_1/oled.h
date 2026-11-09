@@ -4,13 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "position.h"
-
-typedef enum {
-    EASY_MODE = 0,
-    NORMAL_MODE,
-    HARD_MODE,
-    IMPOSSIBLE
-} MenuOption;
+#include "game.h"
 
 typedef enum {
     OLED_PAGE_0 = 0,
@@ -38,5 +32,7 @@ void oled_main_menu(MenuOption selected_mode);
 void oled_print_menu_item(OLED_Page page, const char *text, bool selected);
 const char *menu_option_to_string(MenuOption option_mode);
 MenuOption oled_menu_switch(Position_Direction dir, MenuOption selected_mode);
+void oled_game_screen(uint8_t lives);
+void oled_game_over(void);
 
 #endif

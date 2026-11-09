@@ -194,10 +194,10 @@ void oled_main_menu(MenuOption selected_mode)
 {
     oled_clear();
 
-    oled_print_menu_item(OLED_PAGE_0, "Easy Mode", selected_mode == 0);
-    oled_print_menu_item(OLED_PAGE_2, "Normal Mode", selected_mode == 1);
-    oled_print_menu_item(OLED_PAGE_4, "Hard Mode", selected_mode == 2);
-    oled_print_menu_item(OLED_PAGE_6, "Impossible", selected_mode == 3);
+    oled_print_menu_item(OLED_PAGE_0, "WELCOME TO GAME", selected_mode == -1);
+    oled_print_menu_item(OLED_PAGE_2, "Easy mode", selected_mode == 0);
+    oled_print_menu_item(OLED_PAGE_4, "Normal mode", selected_mode == 1);
+    oled_print_menu_item(OLED_PAGE_6, "Hard mode", selected_mode == 2);
 }
 
 const char *menu_option_to_string(MenuOption option_mode){
@@ -210,10 +210,6 @@ const char *menu_option_to_string(MenuOption option_mode){
 
         case HARD_MODE:
             return "Hard mode";
-
-        case IMPOSSIBLE:
-            return "Impossible";
-
         default:
             return "Unknown";
     }
@@ -221,30 +217,61 @@ const char *menu_option_to_string(MenuOption option_mode){
 
 
 
-MenuOption oled_menu_switch(Position_Direction dir, MenuOption selected_mode){
-    switch (dir) {
+MenuOption oled_menu_switch(Position_Direction dir, MenuOption selected_mode)
+{
+    switch (dir)
+    {
         case UP:
             if (selected_mode == EASY_MODE){
-                selected_mode = IMPOSSIBLE;
-                oled_main_menu(selected_mode);
-                return selected_mode;
-            }else{
-                selected_mode --;
-                oled_main_menu(selected_mode);
-                return selected_mode;
+                selected_mode = HARD_MODE;
             }
-            break;
-        case DOWN:
-            if (selected_mode == IMPOSSIBLE){
-                selected_mode = EASY_MODE;
-                oled_main_menu(selected_mode);
-                return selected_mode;
-            }else{
-                selected_mode ++;
-                oled_main_menu(selected_mode);
-                return selected_mode;
+            else{
+                selected_mode--;
             }
             break;
 
+        case DOWN:
+            if (selected_mode == HARD_MODE){
+                selected_mode = EASY_MODE;
             }
+            else{
+                selected_mode++;
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return selected_mode;
+}
+
+void oled_game_screen(uint8_t lives)
+{
+    oled_clear();
+
+    oled_pos(OLED_PAGE_2, 20);
+    oled_print("Lives:");
+
+    oled_pos(OLED_PAGE_4, 50);
+
+    char life_char[2];
+    life_char[0] = '0' + lives;
+    life_char[1] = '\0';
+
+    oled_print(life_char);
+}
+
+void oled_game_over(void)
+{
+    oled_clear();
+
+    oled_pos(OLED_PAGE_2, 30);
+    oled_print("GAME OVER");
+
+    oled_pos(OLED_PAGE_4, 20);
+    oled_print("Lives: 0");
+
+    oled_pos(OLED_PAGE_6, 10);
+    oled_print("Press to menu");
 }

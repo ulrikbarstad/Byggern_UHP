@@ -44,7 +44,7 @@ typedef struct __attribute__((packed)) {
 Buttons io_read_buttons(void);
 void io_check_joystick_pressed(MenuOption selected_mode);
 MenuOption io_check_joystick_tick(MenuOption selected_mode, Position_Calibration cal_joy);
-void io_check_buttons(int8_t *r6_pressed);
+void io_check_buttons(int8_t *r6_pressed, Position_Direction* nav_direction, int8_t* nav_pressed);
 
 
 #endif

@@ -9,5 +9,5 @@ void joystick_send_position(int8_t r6_pressed){
     adc_read_joystick(&x_pos, &y_pos);
     CAN_Message positionMsg = {.id = 0x69, .length = 3, .data = {x_pos, y_pos, r6_pressed}};
     can_send(&positionMsg);
-    printf("Joystick Position sent \r\n-----------\r\nx pos: %u\r\ny pos: %u\r\n\r\n", x_pos, y_pos);
+    //printf("Joystick Position sent \r\n-----------\r\nx pos: %u\r\ny pos: %u\r\n\r\n", x_pos, y_pos);
 }

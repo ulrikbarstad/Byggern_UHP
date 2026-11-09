@@ -15,7 +15,9 @@ SOURCE_FILES = \
 	servo.c \
 	adc.c \
 	encoder.c \
-	motor.c
+	motor.c \
+	solenoid.c \
+	ir.c
 #	filenameN.c
 
 # Feel free to ignore anything below this line

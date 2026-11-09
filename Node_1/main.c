@@ -14,6 +14,7 @@
 #include "can.h"
 #include "mcp2515.h"
 #include "joystick.h"
+#include "game.h"
 
 
 #include <stdlib.h>
@@ -73,14 +74,22 @@ int main(void)
     
     //SRAM_test();DISPLAY
     
+
+
     
     
     Position_Calibration cal_joy = {245, 72, 240, 79, 165, 161};
 
     Position_Calibration cal_touch = {255, 2, 255, 2, 0, 0};
 
-    MenuOption selected_mode = EASY_MODE;
-    oled_main_menu(selected_mode);
+    //Display menu
+    MenuOption menuOption = EASY_MODE;
+    oled_main_menu(menuOption);
+
+
+    //Set game state t0 Menu
+    Game_State game_state = MENU;
+  
 
     CAN_Message tx = {
             .id = 0x23,
@@ -89,13 +98,87 @@ int main(void)
         };
     CAN_Message rx;
 
+
+    //buttons checked
     int8_t r6_pressed = 0;
+    Position_Direction nav_direction = NEUTRAL;
+    int8_t nav_pressed = 0;
 
 
-    while (1) {
+
+    uint8_t lives = 0;
+
+    Position_Direction old_nav_direction = NEUTRAL;
+    int8_t old_nav_pressed = 0;
+
+    int8_t ir_broken = 0;
+
+
+    while (1)
+    {
         _delay_ms(1);
-        io_check_buttons(&r6_pressed);
-        joystick_send_position(r6_pressed);
+
+        io_check_buttons(
+            &r6_pressed,
+            &nav_direction,
+            &nav_pressed
+        );
+
+        switch (game_state)
+        {
+            case MENU:
+
+                // Ett menyhopp per joystick-bevegelse
+                if (nav_direction != NEUTRAL &&
+                    old_nav_direction == NEUTRAL)
+                {
+                    game_menu_update(
+                        nav_direction,
+                        &menuOption
+                    );
+                }
+
+                // Trykk joystick for å velge
+                if (nav_pressed && !old_nav_pressed)
+                {
+                    game_start(
+                        menuOption,
+                        &game_state,
+                        &lives
+                    );
+                }
+
+                break;
+
+
+            case PLAYING:
+
+                joystick_send_position(r6_pressed);
+
+                CAN_Message rx;
+                can_receive(&rx);
+                ir_broken = rx.data[0];
+                printf("%i", ir_broken);
+
+                break;
+
+
+            case GAME_OVER:
+
+                if (nav_pressed && !old_nav_pressed)
+                {
+                    game_back_to_menu(
+                        &game_state,
+                        menuOption
+                    );
+                }
+
+                break;
+        }
+
+        old_nav_direction = nav_direction;
+        old_nav_pressed = nav_pressed;
+    
     
         
 

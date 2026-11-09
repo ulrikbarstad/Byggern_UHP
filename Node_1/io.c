@@ -44,11 +44,24 @@ MenuOption io_check_joystick_tick(MenuOption selected_mode, Position_Calibration
     return selected_mode;
 }
 
-void io_check_buttons(int8_t* r6_pressed){
+void io_check_buttons(int8_t* r6_pressed, Position_Direction* nav_direction, int8_t* nav_pressed){
     Buttons buttons = io_read_buttons();
-        if (buttons.R6){
-            *r6_pressed = 1;
-        }
+
+        //r& button
+        if (buttons.R6){ *r6_pressed = 1;}
+           
         else {*r6_pressed = 0;}
+
+        //nav direction
+        if (buttons.NU){*nav_direction = UP;} //2 = nav_up
+
+        else if (buttons.ND){*nav_direction = DOWN;} //1 = nav_down
        
+        else{*nav_direction = NEUTRAL;} // 0 = none
+
+        //nav pressed
+        if (buttons.NB){*nav_pressed = 1;}
+
+        else{*nav_pressed = 0;}
+    
 }
