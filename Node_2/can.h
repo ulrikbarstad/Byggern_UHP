@@ -81,11 +81,13 @@ struct CanMsg {
     };    
 };
 
+//Brukt chatgpt til å lage denne funksjonen
 // Send a CAN message on the bus. 
 // Blocks if the bus does not receive the message (typically because one of the 
 // receiving nodes has not cleared a buffer)
 void can_tx(CanMsg m);
 
+//Brukt chatgpt til å lage denne funksjonen
 // Receive a CAN message.
 // Does not block. Returns 0 if there is no message, 1 otherwise
 uint8_t can_rx(CanMsg* m);

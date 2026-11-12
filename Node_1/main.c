@@ -155,10 +155,17 @@ int main(void)
 
                 joystick_send_position(r6_pressed);
 
-                CAN_Message rx;
-                can_receive(&rx);
-                ir_broken = rx.data[0];
-                printf("%i", ir_broken);
+                CAN_Message rx_broken_IR;
+                if (can_receive(&rx_broken_IR) && rx_broken_IR.id == 70 && rx_broken_IR.length >= 1){
+                    ir_broken = rx_broken_IR.data[0];
+                    if(ir_broken){
+                        printf("%i", ir_broken);
+                        game_lose_life(&game_state, &lives);
+                    }
+                }
+                
+               
+                
 
                 break;
 

@@ -58,7 +58,7 @@ void spi_deselect_all(void){ // setter alle CS til 1 som betyr deselect
     | (1 << CS_CAN);
 }
 
-void spi_select_slave(SPI_Slave slave){ // setter riktig slave til 0, retsen til 1
+void spi_select_slave(SPI_Slave slave){ // setter riktig slave til 0, resten til 1
     spi_deselect_all();
 
     switch(slave){

@@ -54,7 +54,7 @@ void motor_PI_control(int32_t pos, int32_t ref, int32_t* integral_value, _Float3
     int32_t error = pos - ref;
 
     // Deadzone around reference
-    if (error > -10 && error < 10) {
+    if (error > -30 && error < 30) {
         *integral_value = 0;
         motor_update_pulse_width(0);
         return;
@@ -83,15 +83,12 @@ void motor_PI_control(int32_t pos, int32_t ref, int32_t* integral_value, _Float3
         u = -u;
     }
 
-    // Maximum PWM
-    if (u > 50) {
-        u = 50;
-    }
+    u += 1;
 
-    // Overcome motor friction/deadband
-    if (u > 0 && u < 15) {
-        u = 15;
-    }
+
+    if (u > 50) {u = 50;} //Øvre tak
+
+    
 
     motor_update_pulse_width((int32_t)u);
 

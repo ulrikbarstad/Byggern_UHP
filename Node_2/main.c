@@ -55,7 +55,7 @@ int main()
     //time_spinFor(msecs(2000));
 
     int32_t current_pulse_width = 1500;
-    int32_t max_increment = 60;
+    int32_t max_increment = 100;
     Joystick_Calibration calibration_x = {.max_pos = 248, .min_pos = 70, .neutral_buffer = 5, .neutral = 166};
     Joystick_Calibration calibration_y = {.max_pos = 247, .min_pos = 68, .neutral_buffer = 5, .neutral = 165};
     Joystick_Position joystick_pos = joystick_read_position();
@@ -68,9 +68,6 @@ int main()
 
 
     while (1){
-
-
-        
         
         joystick_pos = joystick_read_position();
 
@@ -86,19 +83,18 @@ int main()
                 
         servo_PWM_val = 1100 + ((old_joystick_y_pos - 68) * 800) / 179;
             
-        printf("pressed = %i \r\n\r\n", joystick_pos.r6_pressed);
+        
         solenoid_pulse(&active, joystick_pos.r6_pressed);
 
         //printf("xpos: %i\r\n", measured_pos);
         //time_spinFor(msecs(1));
         
         servo_update_pulse_width(servo_pulse_width_guard(servo_PWM_val));
-        printf("%i\r\n", servo_PWM_val);
         
         //servo_move(joystick_pos.y_pos, &current_pulse_width, max_increment, calibration_y);
-        motor_update_ref(&ref, joystick_pos.x_pos, 300, calibration_x);
+        motor_update_ref(&ref, joystick_pos.x_pos, max_increment, calibration_x);
         encoder_data = encoder_get_data();
-        motor_PI_control(encoder_data.pos, ref, &integral_value, 0.1f, 0.0f);
+        motor_PI_control(encoder_data.pos, ref, &integral_value, 0.05f, 0.0f);
 
         //motor_update_pulse_width(20);
         //printf("adc: %lu\r\n", adc_read());

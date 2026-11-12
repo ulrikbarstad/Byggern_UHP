@@ -7,7 +7,7 @@ volatile int32_t timer_done = 0;
 void solenoid_init(){
     //Arduino D10 = PA28
     PIOA->PIO_WPMR =  0x50494F00; //Write protect disable
-    PIOA->PIO_PER |= PIO_PER_P28; //arduino D05 as output pin
+    PIOA->PIO_PER |= PIO_PER_P28; //arduino D10 as output pin
     PIOA->PIO_OER |= PIO_PER_P28;
 
     PMC->PMC_WPMR = 0x504D4300; // Disables write protect mode register

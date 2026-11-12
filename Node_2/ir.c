@@ -1,13 +1,15 @@
 #include <stdint.h>
+#include <stdio.h>
 #include "adc.h"
 #include "ir.h"
 #include "can.h"
 
-#define IR_BROKEN_THRESHOLD   1000
-#define IR_CLEAR_THRESHOLD    1500
+#define IR_BROKEN_THRESHOLD   700
+#define IR_CLEAR_THRESHOLD    2500
 
 int32_t ir_broken(){
     int32_t adc_value = adc_read();
+    printf("adc_value: %i \n\r", adc_value);
     static int32_t locked = 0;
     static int32_t clear_counter = 0;
 
@@ -27,7 +29,7 @@ int32_t ir_broken(){
         {
             clear_counter++;
 
-            if (clear_counter >= 200)
+            if (clear_counter >= 30)
             {
                 locked = 0;
                 clear_counter = 0;
@@ -43,7 +45,8 @@ int32_t ir_broken(){
 }
 
 void ir_send_ball_lost(){
-    int32_t broken = ir_broken();
-    CanMsg message = {.id = 70, .length = 1, .byte = {broken}};
-    can_tx(message);
+    if (ir_broken()){
+        CanMsg message = {.id = 70, .length = 1, .byte = {1}};
+        can_tx(message);
+    }
 }
